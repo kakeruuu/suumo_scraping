@@ -1,0 +1,10 @@
+.venv
+.mypy_cache
+others/*
+config.ini
+src/tmp/*/*.csv
+src/tmp/*.csv
+*.log
+__pycache__/
+*.pyc
+src/log/bot_log
