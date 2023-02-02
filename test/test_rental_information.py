@@ -1,3 +1,4 @@
+import pdb
 import time
 
 from selenium import webdriver
@@ -36,6 +37,26 @@ def go_rental_information():
             btn.click()
             time.sleep(5)
             break
+
+    ## 沿線・エリア選択機能 ##
+    target_map = "東京都"
+    in_which_way = "エリア"
+    areamap_field = driver.find_element(By.CSS_SELECTOR, "[class='areamap-field']")
+
+    for box in areamap_field.find_elements(By.CSS_SELECTOR, "[class^='areabox ']"):
+        map_title = box.find_element(By.CSS_SELECTOR, "[class='areabox-title']").text
+
+        if map_title == target_map:
+            li = box.find_elements(By.CSS_SELECTOR, "ul.ui-list--hz > li")
+            break
+
+    for l in li:
+        if l.text == in_which_way:
+            l.find_element(By.CSS_SELECTOR, "a").click()
+            time.sleep(5)
+            break
+
+    ## 市区郡選択 ##
 
 
 if __name__ == "__main__":
