@@ -14,16 +14,15 @@ def go_rental_information():
     driver.get(url=url)
     time.sleep(10)
 
+    ## 地方選択 ##
     area_lists = driver.find_element(By.ID, "js-areamap_monthly_background")
-    area_lists_link = area_lists.find_elements(By.TAG_NAME, "a")
+    area_lists_boxes = area_lists.find_elements(By.CSS_SELECTOR, "[class^='areabox ']")
     target_area = "関東"
 
-    for area in area_lists_link:
+    for area in area_lists_boxes:
         area_title = area.find_element(By.CLASS_NAME, "areabox-title")
         if area_title.text == target_area:
-            print(area.text)
-            link = area.get_attribute("href")
-            driver.get(link)
+            area.find_element(By.TAG_NAME, "a").click()
             time.sleep(5)
             break
 
