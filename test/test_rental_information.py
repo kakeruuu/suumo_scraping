@@ -26,6 +26,17 @@ def go_rental_information():
             time.sleep(5)
             break
 
+    ## 賃貸物件選択 ##
+    real_estate_btns = driver.find_elements(
+        By.CSS_SELECTOR, "[class*='ui-btn ui-btn--base areamenu-btn']"
+    )
+    target_real_estate = "賃貸物件"
+    for btn in real_estate_btns:
+        if btn.text == target_real_estate:
+            btn.click()
+            time.sleep(5)
+            break
+
 
 if __name__ == "__main__":
     go_rental_information()
