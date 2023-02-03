@@ -57,6 +57,44 @@ def go_rental_information():
             break
 
     ## 市区郡選択 ##
+    # 行政区コードで選択する
+    japan_postal_codes = [
+        13101,
+        13102,
+        13103,
+        13104,
+        13105,
+        13106,
+        13107,
+        13108,
+        13109,
+        13110,
+        13111,
+        13112,
+        13113,
+        13114,
+        13115,
+        13116,
+        13117,
+        13118,
+        13119,
+        13120,
+        13121,
+        13122,
+        13123,
+    ]
+    # FIX:Selenium.common.exceptions.ElementClickInterceptedException
+    for code in japan_postal_codes:
+        # TODO:対象コードがない場合の処理を追加する
+        driver.find_element(By.ID, f"la{code}").click()
+        time.sleep(1)
+
+    driver.find_element(
+        By.CSS_SELECTOR,
+        "[class='ui-btn ui-btn--search btn--large js-shikugunSearchBtn']",
+    ).click()
+
+    time.sleep(5)
 
 
 if __name__ == "__main__":
