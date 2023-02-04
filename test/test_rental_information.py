@@ -2,10 +2,12 @@ import pdb
 import time
 
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
 
+# TODO:要素が完全にロードされるまでの待機処理も考える必要あり
 def go_rental_information():
     driver_path = ChromeDriverManager().install()
     driver = webdriver.Chrome(executable_path=driver_path)
@@ -83,16 +85,23 @@ def go_rental_information():
         13122,
         13123,
     ]
-    # FIX:Selenium.common.exceptions.ElementClickInterceptedException
+
     for code in japan_postal_codes:
         # TODO:対象コードがない場合の処理を追加する
-        driver.find_element(By.ID, f"la{code}").click()
-        time.sleep(1)
+        try:
+            checkbox = driver.find_element(By.ID, f"la{code}")
+            driver.execute_script("arguments[0].click();", checkbox)
+            time.sleep(1)
+        # 対象の行政区コードに対象物件が存在しない場合は次のコードへ行く
+        # NoSuchElementExceptionの発生までに時間がかかるので、最初に存在する行政区コードを集計した方がいいかもしれない
+        except NoSuchElementException as e:
+            continue
 
-    driver.find_element(
+    search_btn = driver.find_element(
         By.CSS_SELECTOR,
         "[class='ui-btn ui-btn--search btn--large js-shikugunSearchBtn']",
-    ).click()
+    )
+    driver.execute_script("arguments[0].click();", search_btn)
 
     time.sleep(5)
 
