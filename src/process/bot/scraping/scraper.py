@@ -66,6 +66,9 @@ class Scraper(webdriver.Chrome):
                 li = box.find_elements(By.CSS_SELECTOR, "ul.ui-list--hz > li")
                 break
 
+        if not (li):
+            raise ValueError("not exist target_map")
+
         for l in li:
             if l.text == way:
                 l.find_element(By.CSS_SELECTOR, "a").click()
@@ -91,3 +94,24 @@ class Scraper(webdriver.Chrome):
         self.execute_script("arguments[0].click();", search_btn)
 
         time.sleep(5)
+
+    # select_boxは処理できないためエラーになるので、分岐させる必要がある
+    def select_other_conditions(self, condition, select_labels: list):
+        other_conditions = self.find_elements(
+            By.CSS_SELECTOR, "[class='l-refinetable > table > tbody > tr']"
+        )
+        for condition_box in other_conditions:
+            th = condition_box.find_element(By.CSS_SELECTOR, "th").text
+            if th == condition:
+                condition_li_in_box = condition_box.find_elements(By.CSS_SELECTOR, "li")
+                break
+
+        if not (condition_li_in_box):
+            raise ValueError("not exist condition")
+
+        for li in condition_li_in_box:
+            label = li.find_element(By.CSS_SELECTOR, "label").text
+            if label in select_labels:
+                input_box = li.find_element(By.CSS_SELECTOR, "input")
+                self.execute_script("arguments[0].click();", input_box)
+                select_labels.remove(label)
