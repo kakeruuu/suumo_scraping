@@ -6,7 +6,8 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
-from src.process.bot.scraping.select_conditions import SelectConditions
+from model.conditions import Conditions
+from process.bot.scraping.select_conditions import SelectConditions
 
 
 class Scraper(webdriver.Chrome):
@@ -32,10 +33,10 @@ class Scraper(webdriver.Chrome):
         self.get(url)
         # self.waitng.wait_main_loaded()
 
-    def go_to_property_list(self, conditions):
+    def go_to_property_list(self, conditions: Conditions):
         select_conditions = SelectConditions(self)
-        select_conditions.select_region()
-        select_conditions.select_real_estate()
-        select_conditions.select_area_or_line()
-        select_conditions.select_city()
-        select_conditions.select_other_conditions()
+        select_conditions.select_region(conditions.region)
+        select_conditions.select_real_estate(conditions.real_estate)
+        select_conditions.select_area_or_line(conditions.map, conditions.way)
+        select_conditions.select_city(conditions.city_codes)
+        select_conditions.select_other_conditions(conditions.other_condtions)
