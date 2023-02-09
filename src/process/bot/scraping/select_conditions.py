@@ -1,7 +1,7 @@
 import pdb
 import time
 
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchAttributeException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
@@ -59,7 +59,7 @@ class SelectConditions:
                 li = box.find_elements(By.CSS_SELECTOR, "ul.ui-list--hz > li")
                 break
 
-        if not (li):
+        if not li:
             raise ValueError("not exist target_map")
 
         for l in li:
@@ -68,15 +68,23 @@ class SelectConditions:
                 self.waitng.until(lambda x: self.page_is_loaded())
                 break
 
-    def select_city(self, city_codes):
-        for code in city_codes:
+    def select_city(self, city_codes: list[int]):
+        city_code_table = self.driver.find_element(
+            By.CSS_SELECTOR, "#js-areaSelectForm > div.l-searchtable > table > tbody"
+        )
+
+        city_code_check_boxes = city_code_table.find_elements(By.CSS_SELECTOR, "input")
+        for check_box in city_code_check_boxes:
             try:
-                checkbox = self.driver.find_element(By.ID, f"la{code}")
-                self.driver.execute_script("arguments[0].click();", checkbox)
+                val = check_box.get_attribute("value")
+                if val == "on" or int(val) not in city_codes:
+                    continue
+
+                self.driver.execute_script("arguments[0].click();", check_box)
+                city_codes.remove(int(val))
                 time.sleep(1)
-            # 対象の行政区コードに対象物件が存在しない場合は次のコードへ行く
-            # TODO:NoSuchElementExceptionの発生までに時間がかかるので、最初に存在する行政区コードを集計した方がいいかもしれない
-            except NoSuchElementException as e:
+
+            except NoSuchAttributeException as e:
                 continue
 
     def select_other_conditions(self, other_conditions: dict[str, list[str | int]]):
