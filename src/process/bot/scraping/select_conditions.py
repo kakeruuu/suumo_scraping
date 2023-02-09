@@ -4,11 +4,21 @@ import time
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class SelectConditions:
     def __init__(self, driver: WebDriver):
         self.driver = driver
+        self.waitng = WebDriverWait(self.driver, 15)
+
+    def page_is_loaded(self):
+        is_loaded = (
+            self.driver.execute_script("return document.readyState") == "complete"
+        )
+        time.sleep(2)
+        return is_loaded
 
     def select_region(self, target_region):
         area_lists = self.driver.find_element(By.ID, "js-areamap_monthly_background")
@@ -20,17 +30,18 @@ class SelectConditions:
             area_title = area.find_element(By.CLASS_NAME, "areabox-title")
             if area_title.text == target_region:
                 area.find_element(By.TAG_NAME, "a").click()
-                time.sleep(5)
+                self.waitng.until(lambda x: self.page_is_loaded())
                 break
 
     def select_real_estate(self, target_real_estate):
+
         real_estate_btns = self.driver.find_elements(
             By.CSS_SELECTOR, "[class*='ui-btn ui-btn--base areamenu-btn']"
         )
         for btn in real_estate_btns:
             if btn.text == target_real_estate:
                 btn.click()
-                time.sleep(2)
+                self.waitng.until(lambda x: self.page_is_loaded())
                 break
 
     def select_area_or_line(self, target_map, way):
@@ -54,7 +65,7 @@ class SelectConditions:
         for l in li:
             if l.text == way:
                 l.find_element(By.CSS_SELECTOR, "a").click()
-                time.sleep(5)
+                self.waitng.until(lambda x: self.page_is_loaded())
                 break
 
     def select_city(self, city_codes):
@@ -95,7 +106,7 @@ class SelectConditions:
                     other_conditions[th].remove(label)
                     if not other_conditions[th]:
                         break
-            pdb.set_trace()
+
             del other_conditions[th]
 
         search_btn = self.driver.find_element(
@@ -104,4 +115,4 @@ class SelectConditions:
         )
         self.driver.execute_script("arguments[0].click();", search_btn)
 
-        time.sleep(5)
+        self.waitng.until(lambda x: self.page_is_loaded())
