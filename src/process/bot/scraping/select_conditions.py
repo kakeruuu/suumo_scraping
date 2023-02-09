@@ -7,7 +7,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 
 
 class SelectConditions:
-    def __init__(self, driver: WebDriver) -> None:
+    def __init__(self, driver: WebDriver):
         self.driver = driver
 
     def select_region(self, target_region):
@@ -59,7 +59,6 @@ class SelectConditions:
 
     def select_city(self, city_codes):
         for code in city_codes:
-            # TODO:対象コードがない場合の処理を追加する
             try:
                 checkbox = self.driver.find_element(By.ID, f"la{code}")
                 self.driver.execute_script("arguments[0].click();", checkbox)
@@ -69,6 +68,36 @@ class SelectConditions:
             except NoSuchElementException as e:
                 continue
 
+    def select_other_conditions(self, other_conditions: dict[str, list[str | int]]):
+
+        while other_conditions:
+            other_conditions_box = self.driver.find_elements(
+                By.CSS_SELECTOR,
+                "#js-shiborikomiForm > div > div.ui-section-body > div.l-refinetable > table > tbody > tr",
+            )
+
+            for condition_box in other_conditions_box:
+                th = condition_box.find_element(By.CSS_SELECTOR, "th").text
+                if th in other_conditions:
+                    condition_li_in_box = condition_box.find_elements(
+                        By.CSS_SELECTOR, "li"
+                    )
+                    break
+
+            if not (condition_li_in_box):
+                raise ValueError("not exist condition")
+
+            for li in condition_li_in_box:
+                label = li.find_element(By.CSS_SELECTOR, "label").text
+                if label in other_conditions[th]:
+                    input_box = li.find_element(By.CSS_SELECTOR, "input")
+                    self.driver.execute_script("arguments[0].click();", input_box)
+                    other_conditions[th].remove(label)
+                    if not other_conditions[th]:
+                        break
+            pdb.set_trace()
+            del other_conditions[th]
+
         search_btn = self.driver.find_element(
             By.CSS_SELECTOR,
             "[class='ui-btn ui-btn--search btn--large js-shikugunSearchBtn']",
@@ -76,24 +105,3 @@ class SelectConditions:
         self.driver.execute_script("arguments[0].click();", search_btn)
 
         time.sleep(5)
-
-    # select_boxは処理できないためエラーになるので、分岐させる必要がある
-    def select_other_conditions(self, condition, select_labels: list):
-        other_conditions = self.driver.find_elements(
-            By.CSS_SELECTOR, "[class='l-refinetable > table > tbody > tr']"
-        )
-        for condition_box in other_conditions:
-            th = condition_box.find_element(By.CSS_SELECTOR, "th").text
-            if th == condition:
-                condition_li_in_box = condition_box.find_elements(By.CSS_SELECTOR, "li")
-                break
-
-        if not (condition_li_in_box):
-            raise ValueError("not exist condition")
-
-        for li in condition_li_in_box:
-            label = li.find_element(By.CSS_SELECTOR, "label").text
-            if label in select_labels:
-                input_box = li.find_element(By.CSS_SELECTOR, "input")
-                self.driver.execute_script("arguments[0].click();", input_box)
-                select_labels.remove(label)
