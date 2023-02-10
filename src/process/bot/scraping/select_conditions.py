@@ -1,7 +1,8 @@
 import pdb
+import re
 import time
 
-from selenium.common.exceptions import NoSuchAttributeException, NoSuchElementException
+from selenium.common.exceptions import NoSuchAttributeException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
@@ -34,7 +35,6 @@ class SelectConditions:
                 break
 
     def select_real_estate(self, target_real_estate):
-
         real_estate_btns = self.driver.find_elements(
             By.CSS_SELECTOR, "[class*='ui-btn ui-btn--base areamenu-btn']"
         )
@@ -45,12 +45,11 @@ class SelectConditions:
                 break
 
     def select_area_or_line(self, target_map, way):
-        # TODO:wayの入力値を使って直接エリアか沿線を詮索できた方がいい？
         areamap_field = self.driver.find_element(
             By.CSS_SELECTOR, "[class='areamap-field']"
         )
 
-        for box in areamap_field.find_elements(By.CSS_SELECTOR, "[class^='areabox ']"):
+        for box in areamap_field.find_elements(By.CSS_SELECTOR, "dl"):
             map_title = box.find_element(
                 By.CSS_SELECTOR, "[class='areabox-title']"
             ).text
@@ -68,27 +67,25 @@ class SelectConditions:
                 self.waitng.until(lambda x: self.page_is_loaded())
                 break
 
-    def select_city(self, city_codes: list[int]):
+    def select_main_conditions(self, main_conditions: list[str]):
         city_code_table = self.driver.find_element(
-            By.CSS_SELECTOR, "#js-areaSelectForm > div.l-searchtable > table > tbody"
+            By.CSS_SELECTOR, "[class='searchtable']"
         )
 
-        city_code_check_boxes = city_code_table.find_elements(By.CSS_SELECTOR, "input")
-        for check_box in city_code_check_boxes:
-            try:
-                val = check_box.get_attribute("value")
-                if val == "on" or int(val) not in city_codes:
-                    continue
+        city_code_check_boxes = city_code_table.find_elements(By.CSS_SELECTOR, "li")
+        for check_box_li in city_code_check_boxes:
+            label, quantity = check_box_li.text.split("(")
+            quantity = int(re.sub("\D", "", quantity))
 
-                self.driver.execute_script("arguments[0].click();", check_box)
-                city_codes.remove(int(val))
-                time.sleep(1)
-
-            except NoSuchAttributeException as e:
+            if quantity <= 0 or label not in main_conditions:
                 continue
 
-    def select_other_conditions(self, other_conditions: dict[str, list[str | int]]):
+            check_box = check_box_li.find_element(By.CSS_SELECTOR, "input")
+            self.driver.execute_script("arguments[0].click();", check_box)
+            main_conditions.remove(label)
+            time.sleep(1)
 
+    def select_other_conditions(self, other_conditions: dict[str, list[str | int]]):
         while other_conditions:
             other_conditions_box = self.driver.find_elements(
                 By.CSS_SELECTOR,
@@ -103,6 +100,8 @@ class SelectConditions:
                     )
                     break
 
+            # 永久ループが起きる=other_conditionsに値が存在し続ける=該当するthがない=condition_li_in_boxがない
+            # よって、以下の例外を発生させることで回避
             if not (condition_li_in_box):
                 raise ValueError("not exist condition")
 

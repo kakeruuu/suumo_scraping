@@ -45,5 +45,5 @@ class Scraper(webdriver.Chrome):
         select_conditions.select_region(conditions.region)
         select_conditions.select_real_estate(conditions.real_estate)
         select_conditions.select_area_or_line(conditions.map, conditions.way)
-        select_conditions.select_city(conditions.city_codes)
+        select_conditions.select_main_conditions(conditions.main_conditions)
         select_conditions.select_other_conditions(conditions.other_condtions)
