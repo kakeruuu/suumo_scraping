@@ -10,6 +10,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from model.conditions import Conditions
 from process.bot.scraping.select_conditions import SelectConditions
+from utils.df import DataFrames
 
 
 class Scraper(webdriver.Chrome):
@@ -47,3 +48,39 @@ class Scraper(webdriver.Chrome):
         select_conditions.select_area_or_line(conditions.map, conditions.way)
         select_conditions.select_main_conditions(conditions.main_conditions)
         select_conditions.select_other_conditions(conditions.other_condtions)
+
+    def manage_scrape_property_list(self):
+        pdb.set_trace()
+        easy_db = DataFrames()
+        property_list = self.find_element(By.ID, "js-bukkenList")
+        property_groups = property_list.find_elements(
+            By.CSS_SELECTOR, "[class='l-cassetteitem']"
+        )
+        # こういう処理多い気がする
+        for group in property_groups:
+            property_li = group.find_elements(By.CSS_SELECTOR, "li")
+            for li in property_li:
+                # 物件詳細の取得
+                title = li.find_element(
+                    By.CSS_SELECTOR, "[class='cassetteitem_content-title']"
+                ).text
+                # MEMO:以下の物件詳細は駅からの徒歩分数データが必ず3つである前提になっている
+                # なので、データ数が前後する可能性を考慮して取得する方が良い？
+                details = li.find_element(
+                    By.CSS_SELECTOR, "[class='cassetteitem_detail']"
+                ).text.split("\n")
+
+                # 住戸情報の取得
+                dwelling_units = li.find_elements(
+                    By.CSS_SELECTOR, "[class='js-cassette_link']"
+                )
+
+                tbody_data = []
+                for tr in dwelling_units:
+                    tds = tr.find_elements(By.CSS_SELECTOR, "td")
+                    row_data = [td.text for td in tds]
+                    tbody_data.append(row_data)
+
+                easy_db.add_df(tbody_data)
+
+        # TODO：次ページへ行く処理を追加
