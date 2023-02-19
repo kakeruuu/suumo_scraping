@@ -78,9 +78,11 @@ class Scraper(webdriver.Chrome):
                 tbody_data = []
                 for tr in dwelling_units:
                     tds = tr.find_elements(By.CSS_SELECTOR, "td")
-                    row_data = [td.text for td in tds]
+                    row_data = details + [td.text for td in tds]
+                    row_data.insert(0, title)
+                    pdb.set_trace()
                     tbody_data.append(row_data)
 
                 easy_db.add_df(tbody_data)
 
-        # TODO：次ページへ行く処理を追加
+        # TODO:次ページへ行く処理を追加
