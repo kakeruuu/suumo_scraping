@@ -1,5 +1,6 @@
 import pdb
 import time
+import traceback
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -50,39 +51,50 @@ class Scraper(webdriver.Chrome):
         select_conditions.select_other_conditions(conditions.other_condtions)
 
     def manage_scrape_property_list(self):
-        pdb.set_trace()
-        easy_db = DataFrames()
-        property_list = self.find_element(By.ID, "js-bukkenList")
-        property_groups = property_list.find_elements(
-            By.CSS_SELECTOR, "[class='l-cassetteitem']"
-        )
-        # こういう処理多い気がする
-        for group in property_groups:
-            property_li = group.find_elements(By.CSS_SELECTOR, "li")
-            for li in property_li:
-                # 物件詳細の取得
-                title = li.find_element(
-                    By.CSS_SELECTOR, "[class='cassetteitem_content-title']"
-                ).text
-                # MEMO:以下の物件詳細は駅からの徒歩分数データが必ず3つである前提になっている
-                # なので、データ数が前後する可能性を考慮して取得する方が良い？
-                details = li.find_element(
-                    By.CSS_SELECTOR, "[class='cassetteitem_detail']"
-                ).text.split("\n")
+        try:
+            pdb.set_trace()
+            easy_db = DataFrames()
+            property_list = self.find_element(By.ID, "js-bukkenList")
+            property_groups = property_list.find_elements(
+                By.CSS_SELECTOR, "[class='l-cassetteitem']"
+            )
 
-                # 住戸情報の取得
-                dwelling_units = li.find_elements(
-                    By.CSS_SELECTOR, "[class='js-cassette_link']"
+            for group in property_groups:
+                property_li = group.find_elements(
+                    By.CSS_SELECTOR, "[class='cassetteitem']"
                 )
+                for li in property_li:
+                    # 物件詳細の取得
+                    title = li.find_element(
+                        By.CSS_SELECTOR, "[class='cassetteitem_content-title']"
+                    ).text
+                    # MEMO:以下の物件詳細は駅からの徒歩分数データが必ず3つである前提になっている
+                    # なので、データ数が前後する可能性を考慮して取得する方が良い？
+                    details = li.find_element(
+                        By.CSS_SELECTOR, "[class='cassetteitem_detail']"
+                    ).text.split("\n")
 
-                tbody_data = []
-                for tr in dwelling_units:
-                    tds = tr.find_elements(By.CSS_SELECTOR, "td")
-                    row_data = details + [td.text for td in tds]
-                    row_data.insert(0, title)
-                    pdb.set_trace()
-                    tbody_data.append(row_data)
+                    details.insert(0, title)
+                    # 住戸情報の取得
+                    dwelling_units = li.find_elements(
+                        By.CSS_SELECTOR, "[class='js-cassette_link']"
+                    )
 
-                easy_db.add_df(tbody_data)
+                    tbody_data = []
+                    for tr in dwelling_units:
+                        tds = tr.find_elements(By.CSS_SELECTOR, "td")
+                        row_data = details + [td.text for td in tds]
+                        tbody_data.append(row_data)
 
-        # TODO:次ページへ行く処理を追加
+                    easy_db.add_df(tbody_data)
+
+            pdb.set_trace()
+            next_button_css = "#js-leftColumnForm > div.pagination_set > div.pagination.pagination_set-nav > p > a"
+            self.find_element(By.CSS_SELECTOR, next_button_css).click()
+            self.waitng.until(lambda x: self.page_is_loaded())
+
+            # TODO:１ページごとに繰り返す処理を追加。
+            # TODO:１ページごとの処理時間の改善
+
+        except Exception as e:
+            print(traceback.format_exc())
