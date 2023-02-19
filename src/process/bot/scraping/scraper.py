@@ -89,12 +89,30 @@ class Scraper(webdriver.Chrome):
                     easy_db.add_df(tbody_data)
 
             pdb.set_trace()
-            next_button_css = "#js-leftColumnForm > div.pagination_set > div.pagination.pagination_set-nav > p > a"
-            self.find_element(By.CSS_SELECTOR, next_button_css).click()
-            self.waitng.until(lambda x: self.page_is_loaded())
+            if self.is_last_page():
+                easy_db.commit_df()
+                return "success"
+
+            self.click_next_page()
 
             # TODO:１ページごとに繰り返す処理を追加。
-            # TODO:１ページごとの処理時間の改善
+            """ TODO:１ページごとの処理時間の改善
+            まずは、manage_scrape_property_listをタスクで分解する
+            """
 
         except Exception as e:
             print(traceback.format_exc())
+
+    def is_last_page(self) -> bool:
+        paginations = self.find_element(
+            By.CSS_SELECTOR, "[class='pagination pagination_set-nav']"
+        )
+        if "次へ" in paginations.text:
+            return False
+
+        return True
+
+    def click_next_page(self):
+        next_button_css = "#js-leftColumnForm > div.pagination_set > div.pagination.pagination_set-nav > p > a"
+        self.find_element(By.CSS_SELECTOR, next_button_css).click()
+        self.waitng.until(lambda x: self.page_is_loaded())
