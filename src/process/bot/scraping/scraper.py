@@ -5,6 +5,7 @@ import traceback
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
@@ -54,39 +55,19 @@ class Scraper(webdriver.Chrome):
         try:
             pdb.set_trace()
             easy_db = DataFrames()
-            property_list = self.find_element(By.ID, "js-bukkenList")
-            property_groups = property_list.find_elements(
-                By.CSS_SELECTOR, "[class='l-cassetteitem']"
-            )
+            property_li = self.find_elements(By.CSS_SELECTOR, "[class='cassetteitem']")
 
-            for group in property_groups:
-                property_li = group.find_elements(
-                    By.CSS_SELECTOR, "[class='cassetteitem']"
-                )
-                for li in property_li:
-                    # 物件詳細の取得
-                    title = li.find_element(
-                        By.CSS_SELECTOR, "[class='cassetteitem_content-title']"
-                    ).text
-                    # MEMO:以下の物件詳細は駅からの徒歩分数データが必ず3つである前提になっている
-                    # なので、データ数が前後する可能性を考慮して取得する方が良い？
-                    details = li.find_element(
-                        By.CSS_SELECTOR, "[class='cassetteitem_detail']"
-                    ).text.split("\n")
+            for li in property_li:
+                # 物件詳細の取得
+                property_data = self.obtain_property_info(li)
 
-                    details.insert(0, title)
-                    # 住戸情報の取得
-                    dwelling_units = li.find_elements(
-                        By.CSS_SELECTOR, "[class='js-cassette_link']"
-                    )
+                # 住戸情報の取得
+                dwelling_unit_data = self.obtain_dwelling_unit(li)
 
-                    tbody_data = []
-                    for tr in dwelling_units:
-                        tds = tr.find_elements(By.CSS_SELECTOR, "td")
-                        row_data = details + [td.text for td in tds]
-                        tbody_data.append(row_data)
+                # 住戸情報と物件詳細の結合
+                data = [property_data + r for r in dwelling_unit_data]
 
-                    easy_db.add_df(tbody_data)
+                easy_db.add_df(data)
 
             pdb.set_trace()
             if self.is_last_page():
@@ -116,3 +97,27 @@ class Scraper(webdriver.Chrome):
         next_button_css = "#js-leftColumnForm > div.pagination_set > div.pagination.pagination_set-nav > p > a"
         self.find_element(By.CSS_SELECTOR, next_button_css).click()
         self.waitng.until(lambda x: self.page_is_loaded())
+
+    def obtain_property_info(self, li: WebElement) -> list[list[str]]:
+        title = li.find_element(
+            By.CSS_SELECTOR, "[class='cassetteitem_content-title']"
+        ).text
+        # MEMO:以下の物件詳細は駅からの徒歩分数データが必ず3つである前提になっている
+        # なので、データ数が前後する可能性を考慮して取得する方が良い？
+        details = li.find_element(
+            By.CSS_SELECTOR, "[class='cassetteitem_detail']"
+        ).text.split("\n")
+
+        details.insert(0, title)
+
+        return details
+
+    def obtain_dwelling_unit(self, li: WebElement) -> list[list[str]]:
+        dwelling_units = li.find_elements(By.CSS_SELECTOR, "[class='js-cassette_link']")
+        tbody_data = []
+        for tr in dwelling_units:
+            tds = tr.find_elements(By.CSS_SELECTOR, "td")
+            row_data = [td.text for td in tds]
+            tbody_data.append(row_data)
+
+        return tbody_data
