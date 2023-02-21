@@ -57,6 +57,7 @@ class Scraper(webdriver.Chrome):
             easy_db = DataFrames()
             property_li = self.find_elements(By.CSS_SELECTOR, "[class='cassetteitem']")
 
+            start = time.perf_counter()
             for li in property_li:
                 # 物件詳細の取得
                 property_data = self.obtain_property_info(li)
@@ -69,6 +70,9 @@ class Scraper(webdriver.Chrome):
 
                 easy_db.add_df(data)
 
+            end = time.perf_counter()
+            print(end - start)
+            print(len(easy_db.list))
             pdb.set_trace()
             if self.is_last_page():
                 easy_db.commit_df()
@@ -99,17 +103,9 @@ class Scraper(webdriver.Chrome):
         self.waitng.until(lambda x: self.page_is_loaded())
 
     def obtain_property_info(self, li: WebElement) -> list[list[str]]:
-        title = li.find_element(
-            By.CSS_SELECTOR, "[class='cassetteitem_content-title']"
-        ).text
-        # MEMO:以下の物件詳細は駅からの徒歩分数データが必ず3つである前提になっている
-        # なので、データ数が前後する可能性を考慮して取得する方が良い？
-        details = li.find_element(
-            By.CSS_SELECTOR, "[class='cassetteitem_detail']"
-        ).text.split("\n")
-
-        details.insert(0, title)
-
+        # まとめたことで「賃貸マンション」という余計なテキストが入っている
+        details = li.find_element(By.CSS_SELECTOR, "[class='cassetteitem_content']")
+        details = details.text.split("\n")
         return details
 
     def obtain_dwelling_unit(self, li: WebElement) -> list[list[str]]:
