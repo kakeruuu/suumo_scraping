@@ -9,8 +9,8 @@ def test_scrape_property_list():
 
     with Scraper(default_dl_path="") as bot:
         bot.land_first_page(url)
-        bot.manage_scrape_property_list()
-        return "success"
+        result = bot.scrape_properties()
+        return result
 
 
 if __name__ == "__main__":
