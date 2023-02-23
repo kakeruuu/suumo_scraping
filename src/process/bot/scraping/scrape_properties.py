@@ -14,6 +14,7 @@ class ScrapeProperties:
     def __init__(self, driver: WebDriver) -> None:
         self.driver = driver
         self.waitng = WebDriverWait(self.driver, 15)
+        self.all_data = []
 
     def page_is_loaded(self):
         is_loaded = (
@@ -22,45 +23,33 @@ class ScrapeProperties:
         time.sleep(2)
         return is_loaded
 
-    def manage_scrape_property_list(self):
-        all_data = []
+    def manage_scrape_property_list(self) -> list:
         while True:
             pdb.set_trace()
-            soup = BeautifulSoup(self.driver.page_source, "lxml")
-
-            # 物件リストを取得
-            property_li = soup.select("[class='cassetteitem']")
-
-            # 物件リストから一つの要素を取得
-            for li in property_li:
-
-                property_data = self.obtain_property_info(li)
-
-                dwelling_unit_data = self.obtain_dwelling_unit_info(li)
-
-                data = [property_data + r for r in dwelling_unit_data]
-
-                all_data.extend(data)
+            self.obtain_info()
 
             pdb.set_trace()
             if self.is_last_page():
-                return "success"
+                return self.all_data
 
             self.click_next_page()
 
-    def is_last_page(self) -> bool:
-        paginations = self.driver.find_element(
-            By.CSS_SELECTOR, "[class='pagination pagination_set-nav']"
-        )
-        if "次へ" in paginations.text:
-            return False
+    def obtain_info(self):
+        soup = BeautifulSoup(self.driver.page_source, "lxml")
 
-        return True
+        # 物件リストを取得
+        property_li = soup.select("[class='cassetteitem']")
 
-    def click_next_page(self):
-        next_button_css = "#js-leftColumnForm > div.pagination_set > div.pagination.pagination_set-nav > p > a"
-        self.driver.find_element(By.CSS_SELECTOR, next_button_css).click()
-        self.waitng.until(lambda x: self.page_is_loaded())
+        # 物件リストから一つの要素を取得
+        for li in property_li:
+
+            property_data = self.obtain_property_info(li)
+
+            dwelling_unit_data = self.obtain_dwelling_unit_info(li)
+
+            data = [property_data + r for r in dwelling_unit_data]
+
+            self.all_data.extend(data)
 
     def obtain_property_info(self, li: Tag) -> list[list[str]]:
         # 取得した一つの物件要素から、物件詳細を取得
@@ -80,3 +69,17 @@ class ScrapeProperties:
             tbody_data.append(row_data)
 
         return tbody_data
+
+    def is_last_page(self) -> bool:
+        paginations = self.driver.find_element(
+            By.CSS_SELECTOR, "[class='pagination pagination_set-nav']"
+        )
+        if "次へ" in paginations.text:
+            return False
+
+        return True
+
+    def click_next_page(self):
+        next_button_css = "#js-leftColumnForm > div.pagination_set > div.pagination.pagination_set-nav > p > a"
+        self.driver.find_element(By.CSS_SELECTOR, next_button_css).click()
+        self.waitng.until(lambda x: self.page_is_loaded())

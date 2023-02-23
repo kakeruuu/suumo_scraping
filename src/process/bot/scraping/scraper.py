@@ -46,9 +46,16 @@ class Scraper(webdriver.Chrome):
         select_conditions.select_real_estate(conditions.real_estate)
         select_conditions.select_area_or_line(conditions.map, conditions.way)
         select_conditions.select_main_conditions(conditions.main_conditions)
-        select_conditions.select_other_conditions(conditions.other_condtions)
+        select_conditions.select_other_conditions(conditions.other_conditions)
 
     def scrape_properties(self):
         scrpape_properties = ScrapeProperties(self)
-        result = scrpape_properties.manage_scrape_property_list()
-        return result
+        while True:
+            pdb.set_trace()
+            scrpape_properties.obtain_info()
+
+            pdb.set_trace()
+            if scrpape_properties.is_last_page():
+                return scrpape_properties.all_data
+
+            scrpape_properties.click_next_page()
