@@ -16,4 +16,4 @@ class DataFrames:
         self.df = pd.DataFrame(data=add_list, columns=self.header)
 
     def add_df(self, data: list) -> None:
-        self.list.append(data)
+        self.list.extend(data)

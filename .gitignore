@@ -8,3 +8,5 @@ src/tmp/*.csv
 __pycache__/
 *.pyc
 src/log/bot_log
+project.egg-info
+build
