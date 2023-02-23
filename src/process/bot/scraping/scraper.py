@@ -54,37 +54,33 @@ class Scraper(webdriver.Chrome):
         select_conditions.select_main_conditions(conditions.main_conditions)
         select_conditions.select_other_conditions(conditions.other_condtions)
 
-    # bs4 base
+    # 以下の処理を別のクラスとして定義する
     def manage_scrape_property_list(self):
         try:
-            pdb.set_trace()
             all_data = []
-            start = time.perf_counter()
-            soup = BeautifulSoup(self.page_source, "lxml")
+            while True:
+                pdb.set_trace()
+                soup = BeautifulSoup(self.page_source, "lxml")
 
-            # 物件リストを取得
-            property_li = soup.select("[class='cassetteitem']")
+                # 物件リストを取得
+                property_li = soup.select("[class='cassetteitem']")
 
-            # 物件リストから一つの要素を取得
+                # 物件リストから一つの要素を取得
+                for li in property_li:
 
-            for li in property_li:
+                    property_data = self.obtain_property_info(li)
 
-                property_data = self.obtain_property_info(li)
+                    dwelling_unit_data = self.obtain_dwelling_unit_info(li)
 
-                dwelling_unit_data = self.obtain_dwelling_unit(li)
+                    data = [property_data + r for r in dwelling_unit_data]
 
-                data = [property_data + r for r in dwelling_unit_data]
+                    all_data.extend(data)
 
-                all_data.extend(data)
+                pdb.set_trace()
+                if self.is_last_page():
+                    return "success"
 
-            end = time.perf_counter()
-            print(end - start)
-            print(len(all_data))
-            pdb.set_trace()
-            if self.is_last_page():
-                return "success"
-
-            self.click_next_page()
+                self.click_next_page()
 
         except Exception as e:
             print(e)
@@ -109,7 +105,7 @@ class Scraper(webdriver.Chrome):
         details = details.text.split("\n")
         return details
 
-    def obtain_dwelling_unit(self, li: Tag) -> list[list[str]]:
+    def obtain_dwelling_unit_info(self, li: Tag) -> list[list[str]]:
         # 取得した一つの物件要素から、住戸リストを取得
         dwelling_units = li.select("[class='js-cassette_link']")
         tbody_data = []
