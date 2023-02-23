@@ -7,5 +7,5 @@ class Conditions:
     real_estate: str
     map: str
     way: str
-    city_codes: list[int]
-    other_condtions: list[dict[str | int]]
+    main_conditions: list[int]
+    other_conditions: list[dict[str | int]]
