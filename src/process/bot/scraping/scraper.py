@@ -49,13 +49,13 @@ class Scraper(webdriver.Chrome):
         select_conditions.select_other_conditions(conditions.other_conditions)
 
     def scrape_properties(self):
-        scrpape_properties = ScrapeProperties(self)
+        scrape_properties = ScrapeProperties(self)
         while True:
             pdb.set_trace()
-            scrpape_properties.obtain_info()
+            scrape_properties.obtain_info()
 
             pdb.set_trace()
-            if scrpape_properties.is_last_page():
-                return scrpape_properties.all_data
+            if scrape_properties.is_last_page():
+                return scrape_properties.all_data
 
-            scrpape_properties.click_next_page()
+            scrape_properties.click_next_page()
