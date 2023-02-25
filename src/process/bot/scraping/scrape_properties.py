@@ -23,17 +23,6 @@ class ScrapeProperties:
         time.sleep(2)
         return is_loaded
 
-    def manage_scrape_property_list(self) -> list:
-        while True:
-            pdb.set_trace()
-            self.obtain_info()
-
-            pdb.set_trace()
-            if self.is_last_page():
-                return self.all_data
-
-            self.click_next_page()
-
     def obtain_info(self):
         soup = BeautifulSoup(self.driver.page_source, "lxml")
 
@@ -65,9 +54,10 @@ class ScrapeProperties:
         for tr in dwelling_units:
             # 一つの住戸要素から、住戸詳細を取得
             tds = tr.select("td")
-            row_data = [td.text for td in tds]
+            row_data = []
+            for td in tds:
+                row_data.extend([e for e in td.text.split("\n") if e != ""])
             tbody_data.append(row_data)
-
         return tbody_data
 
     def is_last_page(self) -> bool:
