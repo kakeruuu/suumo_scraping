@@ -2,7 +2,7 @@ import pdb
 
 from constants import list_url
 
-from process.bot.scraping.scraper import Scraper
+from process.scraping.scraper import Scraper
 
 
 def test_scrape_property_list():

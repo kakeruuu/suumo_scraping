@@ -3,7 +3,7 @@ import pdb
 from constants import first_page_url, main_conditions, other_conditions
 
 from model.conditions import Conditions
-from process.bot.scraping.scraper import Scraper
+from process.scraping.scraper import Scraper
 
 
 def test_go_to_property_list():

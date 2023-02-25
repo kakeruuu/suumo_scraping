@@ -4,7 +4,7 @@ from constants import first_page_url, main_conditions, other_conditions
 
 from model.conditions import Conditions
 from modules.list2csv import list2csv
-from process.bot.scraping.scraper import Scraper
+from process.scraping.scraper import Scraper
 
 
 def test_all_process():

@@ -51,6 +51,7 @@ class Scraper(webdriver.Chrome):
     def scrape_properties(self):
         scrape_properties = ScrapeProperties(self)
         while True:
+            pdb.set_trace()
             scrape_properties.obtain_info()
 
             if scrape_properties.is_last_page():
