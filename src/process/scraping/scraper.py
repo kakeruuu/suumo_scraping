@@ -8,8 +8,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
 from model.conditions import Conditions
-from process.bot.scraping.scrape_properties import ScrapeProperties
-from process.bot.scraping.select_conditions import SelectConditions
+from process.scraping.scrape_properties import ScrapeProperties
+from process.scraping.select_conditions import SelectConditions
 
 
 class Scraper(webdriver.Chrome):
