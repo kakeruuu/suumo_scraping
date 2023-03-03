@@ -7,7 +7,7 @@ from model.cities import City
 from model.city_group import CityGroup
 from model.prefecture import Prefecture
 from model.region import Region
-from model.setting import get_db
+from model.setting import Base, engine, get_db
 
 
 def init_db():
@@ -39,4 +39,5 @@ def init_db():
 
 
 if __name__ == "__main__":
+    Base.metadata.create_all(bind=engine)
     init_db()
