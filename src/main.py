@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from model.cities import City
@@ -41,28 +42,40 @@ def execute_scraping(conditions):
 @app.get("/read_region")
 def read_region(db: Session = Depends(get_db)):
     region = Region()
-    return [e.as_dict() for e in region.read_region(db)]
+    data = [e.as_dict() for e in region.read_region(db)]
+    return JSONResponse(content=data)
 
 
 @app.get("/read_prefecture")
 def read_prefecture_by_region_id(region_id, db: Session = Depends(get_db)):
     prefecture = Prefecture()
-    return [e.as_dict() for e in prefecture.read_by_region_id(db, region_id)]
+    data = [e.as_dict() for e in prefecture.read_by_region_id(db, region_id)]
+    return JSONResponse(content=data)
 
 
 @app.get("/read_city_group")
-def read_prefecture_by_prefecture_id(prefecture_id, db: Session = Depends(get_db)):
+def read_city_group_by_prefecture_id(prefecture_id, db: Session = Depends(get_db)):
     city_group = CityGroup()
-    return [e.as_dict() for e in city_group.read_by_prefecture_id(db, prefecture_id)]
+    data = [e.as_dict() for e in city_group.read_by_prefecture_id(db, prefecture_id)]
+    return JSONResponse(content=data)
 
 
 @app.get("/read_city")
-def read_prefecture_by_group_id(group_id, db: Session = Depends(get_db)):
+def read_read_city_by_group_id(group_id, db: Session = Depends(get_db)):
     city = City()
-    return [e.as_dict() for e in city.read_by_group_id(db, group_id)]
+    data = [e.as_dict() for e in city.read_by_group_id(db, group_id)]
+    return JSONResponse(content=data)
 
 
-# TODO:ここまでやるならPydanticも導入したいかも
+"""
+TODO:
+- ここまでやるならPydanticも導入したいかも
+- スクレイピング実行エンドポイントをPostに変更する
+- 非同期処理を追加する
+- 各ormクラスを一括でimportできるように変更する
+- returnの値をjson形式にするべきでは？
+"""
+
 if __name__ == "__main__":
     import uvicorn
 
