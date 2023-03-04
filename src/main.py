@@ -2,6 +2,7 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
+from model.prefecture import Prefecture
 from model.region import Region
 from model.setting import get_db
 from modules.list2csv import list2csv
@@ -41,6 +42,13 @@ def read_region(db: Session = Depends(get_db)):
     return [e.as_dict() for e in region.read_region(db)]
 
 
+@app.get("/read_prefecture")
+def read_prefecture_by_region_id(region_id, db: Session = Depends(get_db)):
+    prefecture = Prefecture()
+    return [e.as_dict() for e in prefecture.read_by_region_id(db, region_id)]
+
+
+# TODO:ここまでやるならPydanticも導入したいかも
 if __name__ == "__main__":
     import uvicorn
 
