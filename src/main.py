@@ -42,7 +42,7 @@ def execute_scraping(conditions):
 @app.get("/read_region")
 def read_region(db: Session = Depends(get_db)):
     region = Region()
-    data = [e.as_dict() for e in region.read_region(db)]
+    data = [e.as_dict() for e in region.read_region_all(db)]
     return JSONResponse(content=data)
 
 
