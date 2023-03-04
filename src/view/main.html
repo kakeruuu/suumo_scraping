@@ -4,15 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Execute Scraping</title>
+    <script src="main.js"></script>
 </head>
 
 <body>
     <div id="main">
-        <!-- <button onclick="createRegions()">Fetch Data</button>
-        <div id="response"></div> -->
+        <!-- <button onclick="createPrefecturesCheckbox()">Fetch Data</button> -->
+        <div id="response"></div>
 
         <!-- 地方の選択 -->
-        <div>
+        <div onchange="createPrefecturesSelectBox()">
             <label for="region">地域:</label>
             <select id="region_select_box" name="region">
                 <option value="">選択してください</option>
@@ -22,71 +23,17 @@
         <!-- 都道府県の選択 -->
         <div>
             <label for="prefecture">都道府県:</label>
-            <select id="prefectures_select_box" name="prefecture">
+            <select id="prefecture_select_box" name="prefecture">
+                <option value="">選択してください</option>
             </select>
         </div>
 
-        <!-- 沿線またはエリアの選択 -->
-        <div id="area"></div>
-
         <!-- 市区町村の入力 -->
-
+        <div id="city_checkboxes"></div>
 
         <!-- その他条件 -->
     </div>
 
-    <script>
-        function getData(url) {
-            return fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    return data;
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-        }
-
-        function fetchData() {
-            fetch("http://localhost:8000/")
-                .then(response => response.text())
-                .then(data => {
-                    document.querySelector("#response").textContent = data;
-                });
-        }
-
-        function createRegions() {
-            getData("http://localhost:8000/read_region")
-                .then(data => {
-                    const selectBox = document.getElementById("region_select_box");
-                    selectBox.innerHTML = `
-                        <option value="">選択してください</option>
-                        ${data.map(region => `<option value="${region.region_id}">${region.region}</option>`).join("")}
-                    `;
-                })
-                .catch(error => {
-                    console.error(error);
-                })
-        }
-
-        window.onload = createRegions()
-
-        function createPrefecture() {
-            getData("http://localhost:8000/read_prefecture")
-                .then(data => {
-                    const selectBox = document.getElementById("region_select_box");
-                    selectBox.innerHTML = `
-                        <option value="">選択してください</option>
-                        ${data.map(region => `<option value="${region.region_id}">${region.region}</option>`).join("")}
-                    `;
-                })
-                .catch(error => {
-                    console.error(error);
-                })
-        }
-
-
-    </script>
 </body>
 
 </html>
