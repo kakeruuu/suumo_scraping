@@ -2,6 +2,8 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
+from model.cities import City
+from model.city_group import CityGroup
 from model.prefecture import Prefecture
 from model.region import Region
 from model.setting import get_db
@@ -48,8 +50,20 @@ def read_prefecture_by_region_id(region_id, db: Session = Depends(get_db)):
     return [e.as_dict() for e in prefecture.read_by_region_id(db, region_id)]
 
 
+@app.get("/read_city_group")
+def read_prefecture_by_prefecture_id(prefecture_id, db: Session = Depends(get_db)):
+    city_group = CityGroup()
+    return [e.as_dict() for e in city_group.read_by_prefecture_id(db, prefecture_id)]
+
+
+@app.get("/read_city")
+def read_prefecture_by_group_id(group_id, db: Session = Depends(get_db)):
+    city = City()
+    return [e.as_dict() for e in city.read_by_group_id(db, group_id)]
+
+
 # TODO:ここまでやるならPydanticも導入したいかも
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
