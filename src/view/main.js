@@ -85,6 +85,47 @@ const createCityCheckBoxes = async () => {
     }
 }
 
+const submitForm = async () => {
+    try {
+        const formData = new FormData(document.querySelector('form'));
+        const data = {};
+        const other_conditions = { 間取りタイプ: [], 建物種別: [] };
+        for (const [key, value] of formData.entries()) {
+            if (key === '間取りタイプ') {
+                other_conditions['間取りタイプ'].push(value);
+                continue;
+            }
+            if (key === '建物種別') {
+                other_conditions['建物種別'].push(value);
+                continue;
+            }
+            if (!data[key]) {
+                data[key] = value;
+                continue;
+            }
+            if (!Array.isArray(data[key])) {
+                data[key] = [data[key]];
+            }
+            data[key].push(value);
+        }
+        data['other_conditions'] = other_conditions;
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        };
+        const response = await fetch('http://localhost:8000/test', requestOptions);
+        if (!response.ok) {
+            throw new Error("Network response was not ok.");
+        }
+        const responseData = await response.json();
+        console.log(responseData);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+
 window.onload = async () => {
     await createRegions();
 }
