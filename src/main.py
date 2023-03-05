@@ -1,10 +1,11 @@
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from model.cities import City
 from model.city_group import CityGroup
+from model.conditions import Conditions
 from model.prefecture import Prefecture
 from model.region import Region
 from model.setting import get_db
@@ -28,8 +29,17 @@ def index():
     return {"Hello": "World"}
 
 
+@app.post("/test")
+async def test(request: Request):
+    data = await request.json()
+    conditions = Conditions(**data)
+    print(conditions)
+
+
 @app.get("/scrape")
-def execute_scraping(conditions):
+async def execute_scraping(request: Request):
+    data = await request.json()
+    conditions = Conditions(**data)
     with Scraper(default_dl_path="") as bot:
         bot.land_first_page("https://suumo.jp/")
         bot.go_to_property_list(conditions=conditions)
