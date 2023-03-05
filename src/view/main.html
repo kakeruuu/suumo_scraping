@@ -9,32 +9,141 @@
 
 <body>
     <div id="main">
-        <!-- <button onclick="createPrefecturesCheckbox()">Fetch Data</button> -->
-        <div id="response"></div>
+        <form>
+            <!-- 地方の選択 -->
+            <div onchange="createPrefecturesSelectBox()">
+                <label for="region">地域:</label>
+                <select id="region_select_box" name="region">
+                    <option value="">選択してください</option>
+                </select>
+            </div>
 
-        <!-- 地方の選択 -->
-        <div onchange="createPrefecturesSelectBox()">
-            <label for="region">地域:</label>
-            <select id="region_select_box" name="region">
-                <option value="">選択してください</option>
-            </select>
-        </div>
+            <!-- 都道府県の選択 -->
+            <div onchange="createCityCheckBoxes()">
+                <label for="prefecture">都道府県:</label>
+                <select id="prefecture_select_box" name="prefecture">
+                    <option value="">選択してください</option>
+                </select>
+            </div>
 
-        <!-- 都道府県の選択 -->
-        <div onchange="createCityCheckBoxes()">
-            <label for="prefecture">都道府県:</label>
-            <select id="prefecture_select_box" name="prefecture">
-                <option value="">選択してください</option>
-            </select>
-        </div>
+            <!-- 市区町村の入力 -->
+            <div id="city_checkboxes"></div>
 
-        <!-- 市区町村の入力 -->
-        <div id="city_checkboxes"></div>
-
-        <!-- その他条件 -->
-
+            <!-- その他条件 -->
+            <table>
+                <tbody>
+                    <tr>
+                        <th>間取り</th>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="ワンルーム" value="ワンルーム">
+                                ワンルーム
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="1K" value="1K">
+                                1K
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="1DK" value="1DK">
+                                1DK
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="1LDK" value="1LDK">
+                                1LDK
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="2K" value="2K">
+                                2K
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="2DK" value="2DK">
+                                2DK
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="2LDK" value="2LDK">
+                                2LDK
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="3K" value="3K">
+                                3K
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="3DK" value="3DK">
+                                3DK
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="3LDK" value="3LDK">
+                                3LDK
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="4K" value="4K">
+                                4K
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="4DK" value="4DK">
+                                4DK
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="4LDK" value="4LDK">
+                                4LDK
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="5K以上" value="5K以上">
+                                5K以上
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>建物種別</th>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="マンション" value="マンション">
+                                マンション
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="アパート" value="アパート">
+                                アパート
+                            </label>
+                        </td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="一戸建て・その他" value="一戸建て・その他">
+                                一戸建て・その他
+                            </label>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
     </div>
-
 </body>
 
 </html>
