@@ -61,9 +61,33 @@ def read_city_group_by_prefecture_id(prefecture_id, db: Session = Depends(get_db
 
 
 @app.get("/read_city")
-def read_read_city_by_group_id(group_id, db: Session = Depends(get_db)):
+def read_city_by_group_id(group_id, db: Session = Depends(get_db)):
     city = City()
     data = [e.as_dict() for e in city.read_by_group_id(db, group_id)]
+    return JSONResponse(content=data)
+
+
+@app.get("/read_other_condtions")
+def read_other_condtions():
+    data = {
+        "間取り": [
+            "ワンルーム",
+            "1K",
+            "1DK",
+            "1LDK",
+            "2K",
+            "2DK",
+            "2LDK",
+            "3K",
+            "3DK",
+            "3LDK",
+            "4K",
+            "4DK",
+            "4LDK",
+            "5K以上",
+        ],
+        "建物種別": ["マンション", "アパート", "一戸建て・その他"],
+    }
     return JSONResponse(content=data)
 
 
