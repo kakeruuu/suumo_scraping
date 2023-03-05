@@ -23,21 +23,20 @@ function createRegions() {
         })
 }
 
-// 以下をセレクトボックスに変更し都道府県向けの関数に変換する
+
 function createPrefecturesSelectBox() {
     const regionSelectBox = document.getElementById("region_select_box");
-    const prefecturesCheckBox = document.getElementById("prefecture_selectbox");
+    const prefecturesSelectBox = document.getElementById("prefecture_select_box");
     const regionId = regionSelectBox.value;
 
     if (!regionId) {
-        prefecturesCheckBox.innerHTML = "";
+        prefecturesSelectBox.innerHTML = "";
         return;
     }
 
     getData(`http://localhost:8000/read_prefecture?region_id=${regionId}`)
         .then(data => {
-            const selectBox = document.getElementById("prefecture_select_box");
-            selectBox.innerHTML = `
+            prefecturesSelectBox.innerHTML = `
                         <option value="">選択してください</option>
                         ${data.map(prefecture => `<option value="${prefecture.prefecture_id}">${prefecture.prefecture}</option>`).join("")}
                     `;
@@ -48,39 +47,45 @@ function createPrefecturesSelectBox() {
 }
 
 
-function createCityGroups() {
-    const cityCheckBox = document.getElementById("city_checkboxes")
-    const prefecturesSelectBox = document.getElementById("prefecture_select_box")
-    const prefecturesId = prefecturesSelectBox.value;
+async function createCityCheckBoxes() {
+    const prefecturesSelectBox = document.getElementById("prefecture_select_box");
+    const prefectureId = prefecturesSelectBox.value
+    const cityGroupUrl = `http://localhost:8000/read_city_group?prefecture_id=${prefectureId}`;
+    const cityGroupRes = await fetch(cityGroupUrl);
+    const cityGroupJson = await cityGroupRes.json();
 
-    if (!prefecturesId) {
-        prefecturesCheckBox.innerHTML = "";
-        return;
+    const trs = await Promise.all(cityGroupJson.map(async (group) => {
+        const cityUrl = `http://localhost:8000/read_city?group_id=${group.group_id}`;
+        const cityRes = await fetch(cityUrl);
+        const cityJson = await cityRes.json();
+
+        const cities = cityJson.map(city => `
+        <label>
+          <input type="checkbox" name="${city.city}" value="${city.city_id}">
+          ${city.city}
+        </label>
+      `).join('');
+
+        const citiesTd = `<td>${cities}</td>`;
+        const groupTh = `<th><label><input type="checkbox" name="${group.city_group}" value="${group.group_id}">${group.city_group}</label></th>`;
+        return `<tr>${groupTh}${citiesTd}</tr>`;
+    }));
+
+    const table = document.createElement('table');
+    const tbody = document.createElement('tbody');
+    tbody.innerHTML = trs.join('');
+    table.appendChild(tbody);
+
+    const cityCheckBoxes = document.getElementById("city_checkboxes")
+    const existingTable = cityCheckBoxes.querySelector("table");
+    if (existingTable) {
+        existingTable.remove();
     }
-
-    getData(`http://localhost:8000/read_prefecture?region_id=${regionId}`)
-        .then(data => {
-            const checkboxes = data.map(prefecture => {
-                const label = document.createElement("label");
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.name = "prefecture[]";
-                checkbox.value = prefecture.prefecture_id;
-                label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(prefecture.prefecture));
-                return label;
-            });
-
-            prefecturesCheckBox.innerHTML = "";
-            checkboxes.forEach(checkbox => {
-                prefecturesCheckBox.appendChild(checkbox);
-            });
-        })
-        .catch(error => {
-            console.error(error);
-        });
+    cityCheckBoxes.appendChild(table);
 }
 
+// TODO:thは完璧なので見た目とtdをリスト形式にする
+// TODO:グループの項目をクリックしたら、そのグループ内の市区町村全てをチェックできるようにする
 window.onload = function () {
     createRegions()
 }
