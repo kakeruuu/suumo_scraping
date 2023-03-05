@@ -16,14 +16,14 @@ const createRegions = async () => {
     const selectBox = document.getElementById("region_select_box");
     selectBox.innerHTML = `
         <option value="">選択してください</option>
-        ${data.map(region => `<option value="${region.region_id}">${region.region}</option>`).join("")}
+        ${data.map(region => `<option id="${region.region_id}" value="${region.region}">${region.region}</option>`).join("")}
     `;
 }
 
 const createPrefecturesSelectBox = async () => {
     const regionSelectBox = document.getElementById("region_select_box");
     const prefecturesSelectBox = document.getElementById("prefecture_select_box");
-    const regionId = regionSelectBox.value;
+    const regionId = regionSelectBox.options[regionSelectBox.selectedIndex].id;
 
     if (!regionId) {
         prefecturesSelectBox.innerHTML = "";
@@ -33,13 +33,13 @@ const createPrefecturesSelectBox = async () => {
     const data = await fetchData(`http://localhost:8000/read_prefecture?region_id=${regionId}`);
     prefecturesSelectBox.innerHTML = `
         <option value="">選択してください</option>
-        ${data.map(prefecture => `<option value="${prefecture.prefecture_id}">${prefecture.prefecture}</option>`).join("")}
+        ${data.map(prefecture => `<option id="${prefecture.prefecture_id}" value="${prefecture.prefecture}">${prefecture.prefecture}</option>`).join("")}
     `;
 }
 
 const createCityCheckBoxes = async () => {
     const prefecturesSelectBox = document.getElementById("prefecture_select_box");
-    const prefectureId = prefecturesSelectBox.value
+    const prefectureId = prefecturesSelectBox.options[prefecturesSelectBox.selectedIndex].id
     const cityGroupUrl = `http://localhost:8000/read_city_group?prefecture_id=${prefectureId}`;
     const cityGroupJson = await fetchData(cityGroupUrl);
 
@@ -49,13 +49,13 @@ const createCityCheckBoxes = async () => {
 
         const cities = cityJson.map(city => `
             <label>
-                <input type="checkbox" name="${city.city}" value="${city.city_id}">
+                <input type="checkbox" name="main_conditions" value="${city.city}">
                 ${city.city}
             </label>
         `).join('');
 
         const citiesTd = `<td>${cities}</td>`;
-        const groupTh = `<th><label><input type="checkbox" name="${group.city_group}" value="${group.group_id}">${group.city_group}</label></th>`;
+        const groupTh = `<th><label><input type="checkbox">${group.city_group}</label></th>`;
         return `<tr>${groupTh}${citiesTd}</tr>`;
     }));
 
