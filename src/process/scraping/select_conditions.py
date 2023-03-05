@@ -44,7 +44,7 @@ class SelectConditions:
                 self.waitng.until(lambda x: self.page_is_loaded())
                 break
 
-    def select_area_or_line(self, target_map, way):
+    def select_area_or_line(self, target_prefecture, way):
         areamap_field = self.driver.find_element(
             By.CSS_SELECTOR, "[class='areamap-field']"
         )
@@ -54,7 +54,7 @@ class SelectConditions:
                 By.CSS_SELECTOR, "[class='areabox-title']"
             ).text
 
-            if map_title == target_map:
+            if map_title == target_prefecture:
                 li = box.find_elements(By.CSS_SELECTOR, "ul.ui-list--hz > li")
                 break
 
