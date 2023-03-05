@@ -82,7 +82,24 @@ async function createCityCheckBoxes() {
         existingTable.remove();
     }
     cityCheckBoxes.appendChild(table);
+
+    const ths = table.querySelectorAll("th");
+    for (const th of ths) {
+        th.addEventListener("click", () => {
+            const isChecked = th.querySelector("input").checked;
+            const inputs = th.parentElement.querySelectorAll("td input");
+            for (const input of inputs) {
+                if (input) {
+                    input.checked = isChecked;
+                }
+            }
+        });
+    }
 }
+
+
+
+
 
 // TODO:thは完璧なので見た目とtdをリスト形式にする
 // TODO:グループの項目をクリックしたら、そのグループ内の市区町村全てをチェックできるようにする
