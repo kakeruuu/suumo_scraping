@@ -9,7 +9,7 @@
 
 <body>
     <div id="main">
-        <form action="http://localhost:8000/test" method="post">
+        <form onsubmit="submitForm(); return false;">
             <!-- 地方の選択 -->
             <div onchange="createPrefecturesSelectBox()">
                 <label for="region">地域:</label>
@@ -33,88 +33,88 @@
             <table>
                 <tbody>
                     <tr>
-                        <th>間取り</th>
+                        <th>間取りタイプ</th>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="ワンルーム">
+                                <input type="checkbox" name="間取りタイプ" value="ワンルーム">
                                 ワンルーム
                             </label>
                         </td>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="1K">
+                                <input type="checkbox" name="間取りタイプ" value="1K">
                                 1K
                             </label>
                         </td>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="1DK">
+                                <input type="checkbox" name="間取りタイプ" value="1DK">
                                 1DK
                             </label>
                         </td>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="1LDK">
+                                <input type="checkbox" name="間取りタイプ" value="1LDK">
                                 1LDK
                             </label>
                         </td>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="2K">
+                                <input type="checkbox" name="間取りタイプ" value="2K">
                                 2K
                             </label>
                         </td>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="2DK">
+                                <input type="checkbox" name="間取りタイプ" value="2DK">
                                 2DK
                             </label>
                         </td>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="2LDK">
+                                <input type="checkbox" name="間取りタイプ" value="2LDK">
                                 2LDK
                             </label>
                         </td>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="3K">
+                                <input type="checkbox" name="間取りタイプ" value="3K">
                                 3K
                             </label>
                         </td>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="3DK">
+                                <input type="checkbox" name="間取りタイプ" value="3DK">
                                 3DK
                             </label>
                         </td>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="3LDK">
+                                <input type="checkbox" name="間取りタイプ" value="3LDK">
                                 3LDK
                             </label>
                         </td>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="4K">
+                                <input type="checkbox" name="間取りタイプ" value="4K">
                                 4K
                             </label>
                         </td>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="4DK">
+                                <input type="checkbox" name="間取りタイプ" value="4DK">
                                 4DK
                             </label>
                         </td>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="4LDK">
+                                <input type="checkbox" name="間取りタイプ" value="4LDK">
                                 4LDK
                             </label>
                         </td>
                         <td>
                             <label>
-                                <input type="checkbox" name="間取り" value="5K以上">
+                                <input type="checkbox" name="間取りタイプ" value="5K以上">
                                 5K以上
                             </label>
                         </td>
@@ -142,7 +142,7 @@
                     </tr>
                 </tbody>
             </table>
-            <input type="submit" value="送信">
+            <input type="submit" value="送信" id="submit-btn">
         </form>
     </div>
 </body>
